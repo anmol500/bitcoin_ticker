@@ -1,7 +1,8 @@
+import 'dart:io' as s show Platform;
+
+import 'package:bitcoin_ticker/coin_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'coin_data.dart';
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -48,23 +49,51 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: DropdownButton(
-              value: selectCurrency,
-              onChanged: (value) {
-                setState(() {
-                  selectCurrency = value;
-                });
-              },
-              items: currenciesList
-                  .map((e) => DropdownMenuItem(
-                        child: Text(e),
-                        value: e,
-                      ))
-                  .toList(),
-            ),
+            child: s.Platform.isIOS
+                ? buildCupertinoPicker()
+                : buildDropdownButton(),
           ),
         ],
       ),
+    );
+  }
+
+  buildDropdownButton() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(39, 0, 39, 0),
+      child: DropdownButton(
+        isExpanded: true,
+        dropdownColor: Colors.blue,
+        value: selectCurrency,
+        onChanged: (value) {
+          setState(() {
+            selectCurrency = value;
+          });
+        },
+        items: currenciesList
+            .map((e) => DropdownMenuItem(
+                  child: Center(child: Text(e)),
+                  value: e,
+                ))
+            .toList(),
+      ),
+    );
+  }
+
+  CupertinoPicker buildCupertinoPicker() {
+    return CupertinoPicker(
+      magnification: 1.2,
+      useMagnifier: true,
+      backgroundColor: Colors.blue,
+      itemExtent: 32,
+      onSelectedItemChanged: (onSelectedItemChanged) {
+        print(onSelectedItemChanged);
+      },
+      children: currenciesList
+          .map(
+            (e) => Text(e),
+          )
+          .toList(),
     );
   }
 }
